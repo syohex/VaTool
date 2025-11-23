@@ -4,7 +4,7 @@ using VaTool.Lib;
 
 if (args.Length < 1)
 {
-    throw new Exception("Usage: Wikigen <file> pattern...");
+    throw new Exception("Usage: wikigen <file> pattern...");
 }
 
 var pattern = CreatePattern(args.AsSpan()[1..]);
