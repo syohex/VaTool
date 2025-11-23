@@ -1,18 +1,18 @@
-﻿using Microsoft.AspNetCore.WebUtilities;
+﻿using System.Text.RegularExpressions;
 using Microsoft.Playwright;
-using System.Web;
 
 namespace VaTool.Lib;
 
-public class DmmParser : IParser
+internal class FanzaParser : IParser
 {
-    private const string AffiliateUrl = "https://al.dmm.co.jp";
+    private const string ReleaseDatePattern = @"^[0-9]{4}/{0-9}[2]/[0-9]{2}$";
 
     public async Task<Product> Parse(string url, Config config)
     {
         using var playwright = await Playwright.CreateAsync();
         var browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions { Headless = true });
         var context = await browser.NewContextAsync();
+        var dateRegex = new Regex(ReleaseDatePattern);
 
         var cookie = new Cookie
         {
@@ -31,10 +31,10 @@ public class DmmParser : IParser
         var product = new Product();
 
         var metaTitle = await page.QuerySelectorAsync("meta[property='og:title']");
-        if (metaTitle != null)
+        if (metaTitle is not null)
         {
             var title = await metaTitle.GetAttributeAsync("content");
-            if (title == null)
+            if (string.IsNullOrEmpty(title))
             {
                 throw new Exception($"Cannot get title from {url}");
             }
@@ -42,15 +42,29 @@ public class DmmParser : IParser
             product.Title = title;
         }
 
-        var handles = await page.Locator("a").ElementHandlesAsync();
-        foreach (var handle in handles)
+        var links = await page.Locator("a").ElementHandlesAsync();
+        foreach (var handle in links)
         {
             var src = await handle.GetAttributeAsync("href");
-            if (src == null) continue;
+            if (string.IsNullOrEmpty(src)) continue;
 
             if (src.EndsWith("pl.jpg"))
             {
-                product.Image = src;
+                product.LargeImage = src;
+                product.SmallImage = src.Replace("pl.jpg", "ps.jpg");
+                break;
+            }
+        }
+
+        var spans = await page.Locator("spans").ElementHandlesAsync();
+        foreach (var span in spans)
+        {
+            var text = await span.TextContentAsync();
+            if (string.IsNullOrEmpty(text)) continue;
+
+            if (dateRegex.IsMatch(text))
+            {
+                product.ReleaseDate = text;
                 break;
             }
         }
@@ -58,34 +72,7 @@ public class DmmParser : IParser
         await context.CloseAsync();
         await browser.CloseAsync();
 
-        product.Url = ConstructAffiliateUrl(url, config);
+        product.Url = UrlUtil.FanzaAffiliateUrl(url, config);
         return product;
-    }
-
-    private string ConstructAffiliateUrl(string url, Config config)
-    {
-        // strip unnecessary query parameters
-        var uri = new Uri(url);
-        var query = HttpUtility.ParseQueryString(uri.Query);
-        var keys = query.AllKeys;
-        foreach (var key in keys)
-        {
-            if (key != "id")
-            {
-                query.Remove(key);
-            }
-        }
-
-        var strippedUri = $"{uri.Scheme}://{uri.Host}{uri.AbsolutePath}?{query}";
-
-        var queries = new Dictionary<string, string?>
-        {
-            ["lurl"] = strippedUri,
-            ["af_id"] = config.Dmm.Id,
-            ["ch"] = "link_tool",
-            ["ch_id"] = "link",
-        };
-
-        return QueryHelpers.AddQueryString(AffiliateUrl, queries);
     }
 }

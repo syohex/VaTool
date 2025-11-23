@@ -6,14 +6,7 @@ if (args.Length < 1)
     throw new Exception("Usage: BlogGen <url>");
 }
 
-var homeDir = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-if (string.IsNullOrEmpty(homeDir))
-{
-    throw new Exception("Cannot find home directory");
-}
-
-var configPath = Path.Join(homeDir, ".config", "blog", "config.yaml");
-var config = await ConfigLoader.Load(configPath);
+var config = await ConfigLoader.Load(Config.DefaultPath);
 
 bool hasHeader = false;
 string url;
@@ -38,7 +31,7 @@ if (hasHeader)
 
 template += """
 <a href="{{ product.url }}" target="_blank">
-<img src="{{ product.image }}" alt="{{ product.title }}" />
+<img src="{{ product.largeImage }}" alt="{{ product.title }}" />
 </a>
 
 <p>

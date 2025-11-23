@@ -1,9 +1,9 @@
-﻿using AngleSharp;
-using Microsoft.AspNetCore.WebUtilities;
+﻿using System.Runtime.CompilerServices;
+using AngleSharp;
 
 namespace VaTool.Lib;
 
-public class SokmilParser : IParser
+internal class SokmilParser : IParser
 {
     private const string UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36";
 
@@ -22,10 +22,10 @@ public class SokmilParser : IParser
         var product = new Product();
 
         var titleElement = document.QuerySelector("h1.page-title");
-        if (titleElement != null)
+        if (titleElement is not null)
         {
             var title = titleElement.TextContent;
-            if (title == null)
+            if (string.IsNullOrEmpty(title))
             {
                 throw new Exception($"Cannot get title from {url}");
             }
@@ -34,37 +34,56 @@ public class SokmilParser : IParser
         }
 
         var packageElement = document.QuerySelector("a.sokmil-lightbox-jacket");
-        if (packageElement != null)
+        if (packageElement is not null)
         {
-            var title = packageElement.GetAttribute("href");
-            if (title == null)
+            var imageUrl = packageElement.GetAttribute("href");
+            if (string.IsNullOrEmpty(imageUrl))
             {
-                throw new Exception($"Cannot get package from {url}");
+                throw new Exception($"Cannot get large image from {url}");
             }
 
-            product.Image = title;
+            product.LargeImage = imageUrl;
         }
 
-        product.Url = ConstructAffiliateUrl(url, config);
+        var thumbnailElement = document.QuerySelector("img.jacket-img");
+        if (thumbnailElement is not null)
+        {
+            var imageUrl = thumbnailElement.GetAttribute("content");
+            if (string.IsNullOrEmpty(imageUrl))
+            {
+                throw new Exception($"Cannot get small image from {url}");
+            }
+
+            product.SmallImage = imageUrl;
+        }
+
+        var releaseDateElement = document.QuerySelector("span[itemprop=releaseDate]");
+        if (releaseDateElement is not null)
+        {
+            var releaseDate = releaseDateElement.GetAttribute("content");
+            if (!string.IsNullOrEmpty(releaseDate))
+            {
+                product.ReleaseDate = DateUtil.FormatDate(releaseDate);
+            }
+        }
+
+        if (string.IsNullOrEmpty(product.ReleaseDate))
+        {
+            var publishDateElement = document.QuerySelector("span.publish-at");
+            if (publishDateElement is not null)
+            {
+                var text = publishDateElement.TextContent;
+                if (string.IsNullOrEmpty(text))
+                {
+                    throw new Exception($"Cannot find releaseDate and publishDate from {url}");
+                }
+
+                var publishDate = text.Split(' ')[0];
+                product.ReleaseDate = DateUtil.FormatDate(publishDate);
+            }
+        }
+
+        product.Url = UrlUtil.SokmilAffiliateUrl(url, config);
         return product;
-    }
-
-    private string ConstructAffiliateUrl(string url, Config config)
-    {
-        var queries = new Dictionary<string, string?>
-        {
-            ["affi"] = config.Sokmil.Id,
-            ["utm_source"] = "sokmil_ad",
-            ["utm_medium"] = "affiliate",
-            ["utm_campaign"] = config.Sokmil.Id
-        };
-
-        var builder = new UriBuilder(url)
-        {
-            Query = string.Empty,
-            Fragment = string.Empty
-        };
-
-        return QueryHelpers.AddQueryString(builder.Uri.ToString(), queries);
     }
 }

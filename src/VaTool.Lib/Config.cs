@@ -9,4 +9,18 @@ public struct Config
     {
         public string Id { get; set; }
     }
+
+    public static string DefaultPath
+    {
+        get
+        {
+            var homeDir = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+            if (string.IsNullOrEmpty(homeDir))
+            {
+                throw new Exception("Cannot find home directory");
+            }
+
+            return Path.Join(homeDir, ".config", "blog", "config.yaml");
+        }
+    }
 }

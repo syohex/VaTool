@@ -23,6 +23,6 @@ public class SokmilTest
         var parser = ParserFactory.Create(testUrl);
         var res = await parser.Parse(testUrl, dummyConfig);
         Assert.NotEmpty(res.Title);
-        Assert.NotEmpty(res.Image);
+        Assert.NotEmpty(res.LargeImage);
     }
 }

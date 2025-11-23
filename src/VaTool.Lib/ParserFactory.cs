@@ -6,7 +6,7 @@ public static class ParserFactory
     {
         if (url.Contains("dmm.co.jp"))
         {
-            return new DmmParser();
+            return new FanzaParser();
         }
 
         if (url.Contains("sokmil.com"))
