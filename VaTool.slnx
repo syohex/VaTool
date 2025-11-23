@@ -9,4 +9,7 @@
     <Project Path="src/VaTool.Lib/VaTool.Lib.csproj" />
     <Project Path="src/VaTool.WikiGen/VaTool.WikiGen.csproj" />
   </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/VaTool.Lib.Tests/VaTool.Lib.Tests.csproj" />
+  </Folder>
 </Solution>
