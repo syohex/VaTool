@@ -145,6 +145,8 @@ void RenderTableEntry(TableEntry entry, Config config, StringBuilder sb)
     sb.Append(columnSeparator);
     sb.Append(entry.item.Note);
     sb.Append(columnSeparator);
+
+    sb.AppendLine();
 }
 
 record TableEntry(PageItem item, Product product);
