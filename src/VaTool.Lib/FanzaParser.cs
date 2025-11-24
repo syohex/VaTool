@@ -5,7 +5,7 @@ namespace VaTool.Lib;
 
 internal class FanzaParser : IParser
 {
-    private const string ReleaseDatePattern = @"^[0-9]{4}/{0-9}[2]/[0-9]{2}$";
+    private const string ReleaseDatePattern = @"^[0-9]{4}/[0-9]{2}/[0-9]{2}$";
 
     public async Task<Product> Parse(string url, Config config)
     {
@@ -43,9 +43,9 @@ internal class FanzaParser : IParser
         }
 
         var links = await page.Locator("a").ElementHandlesAsync();
-        foreach (var handle in links)
+        foreach (var link in links)
         {
-            var src = await handle.GetAttributeAsync("href");
+            var src = await link.GetAttributeAsync("href");
             if (string.IsNullOrEmpty(src)) continue;
 
             if (src.EndsWith("pl.jpg"))
@@ -56,15 +56,15 @@ internal class FanzaParser : IParser
             }
         }
 
-        var spans = await page.Locator("spans").ElementHandlesAsync();
+        var spans = await page.Locator("span").ElementHandlesAsync();
         foreach (var span in spans)
         {
-            var text = await span.TextContentAsync();
+            var text = await span.InnerTextAsync();
             if (string.IsNullOrEmpty(text)) continue;
 
             if (dateRegex.IsMatch(text))
             {
-                product.ReleaseDate = text;
+                product.ReleaseDate = DateUtil.FormatDate(text);
                 break;
             }
         }
