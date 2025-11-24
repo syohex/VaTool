@@ -31,7 +31,7 @@ if (hasHeader)
 
 template += """
 <a href="{{ product.url }}" target="_blank">
-<img src="{{ product.largeImage }}" alt="{{ product.title }}" />
+<img src="{{ product.large_image }}" alt="{{ product.title }}" />
 </a>
 
 <p>
