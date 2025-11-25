@@ -2,12 +2,12 @@ using VaTool.Lib;
 
 namespace VaTool.Tests;
 
-public class SokmilTest
+public class FanzaTest
 {
     [Fact]
     public async Task FetchAndParseTest()
     {
-        var testUrl = "https://www.sokmil.com/av/_item/item368235.htm";
+        var testUrl = "https://video.dmm.co.jp/av/content/?id=1start00369";
         var parser = ParserFactory.Create(testUrl);
         var res = await parser.Parse(testUrl, TestData.DummyConfig);
         Assert.NotEmpty(res.Title);
