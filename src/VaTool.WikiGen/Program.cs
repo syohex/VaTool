@@ -91,11 +91,17 @@ void RenderTableEntry(TableEntry entry, Config config, StringBuilder sb)
     const string newLine = "~~";
     const string actressSeparator = "／";
 
-    var fanzaUrl = UrlUtil.FanzaAffiliateUrl(entry.item.FanzaUrl, config);
+    var fanzaUrl = entry.item.HasFanzaUrl()
+                ? UrlUtil.FanzaAffiliateUrl(entry.item.FanzaUrl, config)
+                : string.Empty;
+    var sokmilUrl = entry.item.HasSokmilUrl()
+                ? UrlUtil.SokmilAffiliateUrl(entry.item.SokmilUrl, config)
+                : string.Empty;
 
+    var idUrl = !string.IsNullOrEmpty(fanzaUrl) ? fanzaUrl : sokmilUrl;
     // ID part
     sb.Append(columnSeparator);
-    sb.Append($"[[{entry.item.Id}>{fanzaUrl}]]");
+    sb.Append($"[[{entry.item.Id}>{idUrl}]]");
 
     // Image part
     sb.Append(columnSeparator);
@@ -104,7 +110,6 @@ void RenderTableEntry(TableEntry entry, Config config, StringBuilder sb)
 
     if (entry.item.HasSokmilUrl())
     {
-        var sokmilUrl = UrlUtil.SokmilAffiliateUrl(entry.item.SokmilUrl, config);
         sb.Append($"[[ソクミル>{sokmilUrl}]]");
     }
     if (entry.item.HasSokmilUrl() && entry.item.HasFanzaUrl())
