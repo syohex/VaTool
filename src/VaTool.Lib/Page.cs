@@ -6,7 +6,7 @@ public struct Page
 {
     public string Name { get; set; }
     public string Summary { get; set; }
-    public List<string> RelateLinks { get; set; }
+    public List<string>? RelatedLinks { get; set; }
     public List<PageItem> Items { get; set; }
 }
 
@@ -17,7 +17,7 @@ public struct PageItem
     public string SokmilUrl { get; set; }
     [YamlMember(Alias = "fanza")]
     public string FanzaUrl { get; set; }
-    public List<string> Actresses { get; set; }
+    public List<string>? Actresses { get; set; }
     public string Note { get; set; }
 
     public bool HasSokmilUrl() => !string.IsNullOrEmpty(SokmilUrl);

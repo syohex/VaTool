@@ -82,6 +82,17 @@ string Render(Page page, List<TableEntry> entries, Config config, bool shouldWri
         RenderTableEntry(entry, config, sb);
     }
 
+    if (page.RelatedLinks is not null)
+    {
+        sb.Append("** 関連ページ");
+        sb.AppendLine();
+        foreach (var link in page.RelatedLinks)
+        {
+            sb.Append($"- [[{link}]]");
+            sb.AppendLine();
+        }
+    }
+
     return sb.ToString();
 }
 
@@ -129,6 +140,8 @@ void RenderTableEntry(TableEntry entry, Config config, StringBuilder sb)
     sb.Append(columnSeparator);
 
     var actressLinks = new List<string>();
+    if (entry.item.Actresses is not null)
+    {
     foreach (var actress in entry.item.Actresses)
     {
         if (actress.EndsWith('?'))
@@ -141,6 +154,7 @@ void RenderTableEntry(TableEntry entry, Config config, StringBuilder sb)
         }
     }
     sb.Append(string.Join(actressSeparator, actressLinks));
+    }
 
     // Date part
     sb.Append(columnSeparator);
