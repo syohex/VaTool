@@ -8,7 +8,7 @@ if (args.Length < 1)
 }
 
 var pattern = CreatePattern(args.AsSpan()[1..]);
-var shouldWriteHeder = pattern is null;
+var shouldWriteHeader = pattern is null;
 
 var config = await ConfigLoader.Load(Config.DefaultPath);
 var pageFile = args[0];
@@ -28,7 +28,7 @@ foreach (var item in page.Items)
     entries.Add(new TableEntry(item, product));
 }
 
-var output = Render(page, entries, config, shouldWriteHeder);
+var output = Render(page, entries, config, shouldWriteHeader);
 Console.WriteLine(output);
 
 await Clipboard.Copy(output);
@@ -59,19 +59,19 @@ Regex? CreatePattern(ReadOnlySpan<string> args)
     return new Regex(pattern);
 }
 
-string Render(Page page, List<TableEntry> entries, Config config, bool shouldWriteHeder)
+string Render(Page page, List<TableEntry> entries, Config config, bool shouldWriteHeader)
 {
     const string tableHeader = "|~ID|Image|タイトル|出演者(出演順)|発売日|Note|";
 
     var sb = new StringBuilder();
-    if (!string.IsNullOrEmpty(page.Summary))
+    if (shouldWriteHeader && !string.IsNullOrEmpty(page.Summary))
     {
         sb.Append(page.Summary);
         sb.AppendLine();
         sb.AppendLine();
     }
 
-    if (shouldWriteHeder)
+    if (shouldWriteHeader)
     {
         sb.Append(tableHeader);
         sb.AppendLine();
@@ -142,18 +142,18 @@ void RenderTableEntry(TableEntry entry, Config config, StringBuilder sb)
     var actressLinks = new List<string>();
     if (entry.item.Actresses is not null)
     {
-    foreach (var actress in entry.item.Actresses)
-    {
-        if (actress.EndsWith('?'))
+        foreach (var actress in entry.item.Actresses)
         {
-            actressLinks.Add(actress.TrimEnd('?'));
+            if (actress.EndsWith('?'))
+            {
+                actressLinks.Add(actress.TrimEnd('?'));
+            }
+            else
+            {
+                actressLinks.Add($"[[{actress}]]");
+            }
         }
-        else
-        {
-            actressLinks.Add($"[[{actress}]]");
-        }
-    }
-    sb.Append(string.Join(actressSeparator, actressLinks));
+        sb.Append(string.Join(actressSeparator, actressLinks));
     }
 
     // Date part
