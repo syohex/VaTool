@@ -9,7 +9,7 @@ public class PageLoader
     {
         var yaml = await File.ReadAllTextAsync(pageFile);
         var deserializer = new DeserializerBuilder()
-            .WithNamingConvention(CamelCaseNamingConvention.Instance)
+            .WithNamingConvention(UnderscoredNamingConvention.Instance)
             .IgnoreUnmatchedProperties()
             .Build();
 

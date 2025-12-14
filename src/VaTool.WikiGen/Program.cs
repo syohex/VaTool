@@ -82,8 +82,9 @@ string Render(Page page, List<TableEntry> entries, Config config, bool shouldWri
         RenderTableEntry(entry, config, sb);
     }
 
-    if (page.RelatedLinks is not null)
+    if (shouldWriteHeader && page.RelatedLinks is not null)
     {
+        sb.AppendLine();
         sb.Append("** 関連ページ");
         sb.AppendLine();
         foreach (var link in page.RelatedLinks)
