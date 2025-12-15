@@ -42,16 +42,22 @@ internal class FanzaParser : IParser
             product.Title = title;
         }
 
-        var links = await page.Locator("a").ElementHandlesAsync();
+        var links = await page.Locator("img").ElementHandlesAsync();
         foreach (var link in links)
         {
-            var src = await link.GetAttributeAsync("href");
+            var src = await link.GetAttributeAsync("src");
             if (string.IsNullOrEmpty(src)) continue;
 
-            if (src.EndsWith("pl.jpg"))
+            if (src.Contains("pl.jpg"))
             {
+                var pos = src.IndexOf('?');
+                if (pos >= 0)
+                {
+                    src = src[..pos];
+                }
+
                 product.LargeImage = src;
-                product.SmallImage = src.Replace("pl.jpg", "ps.jpg");
+                product.SmallImage = product.LargeImage.Replace("pl.jpg", "ps.jpg");
                 break;
             }
         }

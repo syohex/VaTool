@@ -10,10 +10,10 @@ PLAYWRITE_SCRIPT=src/VaTool.BlogGen/$(LINUX_BIN_DIR)/$(DOTNET_VERSION)/playwrigh
 
 all: $(BLOG_GEN) $(WIKI_GEN)
 
-$(BLOG_GEN): src/VaTool.BlogGen/*.cs
+$(BLOG_GEN): src/VaTool.BlogGen/*.cs src/VaTool.Lib/*.cs
 	dotnet publish $(BUILD_FLAGS) src/VaTool.BlogGen/VaTool.BlogGen.csproj 
 
-$(WIKI_GEN):  src/VaTool.WikiGen/*.cs	
+$(WIKI_GEN):  src/VaTool.WikiGen/*.cs src/VaTool.Lib/*.cs
 	dotnet publish $(BUILD_FLAGS) src/VaTool.WikiGen/VaTool.WikiGen.csproj 
 
 install: $(BLOG_GEN) $(WIKI_GEN)
