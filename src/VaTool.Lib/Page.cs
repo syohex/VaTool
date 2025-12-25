@@ -17,6 +17,7 @@ public struct PageItem
     public string SokmilUrl { get; set; }
     [YamlMember(Alias = "fanza")]
     public string FanzaUrl { get; set; }
+    public string Parser { get; set; }
     public List<string>? Actresses { get; set; }
     public string Note { get; set; }
 

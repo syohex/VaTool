@@ -35,17 +35,19 @@ await Clipboard.Copy(output);
 
 (IParser, string) GetParser(PageItem item)
 {
-    if (!string.IsNullOrEmpty(item.SokmilUrl))
+    var parser = item.Parser ?? "sokmil";
+
+    if (parser == "sokmil" && !string.IsNullOrEmpty(item.SokmilUrl))
     {
         return (ParserFactory.Create(item.SokmilUrl), item.SokmilUrl);
     }
 
-    if (!string.IsNullOrEmpty(item.FanzaUrl))
+    if (parser == "fanza" && !string.IsNullOrEmpty(item.FanzaUrl))
     {
         return (ParserFactory.Create(item.FanzaUrl), item.FanzaUrl);
     }
 
-    throw new Exception("Please set sokmil or fanza URL");
+    throw new Exception($"Please set sokmil or fanza URL(preferred parser={item.Parser})");
 }
 
 Regex? CreatePattern(ReadOnlySpan<string> args)
