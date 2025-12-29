@@ -35,19 +35,42 @@ await Clipboard.Copy(output);
 
 (IParser, string) GetParser(PageItem item)
 {
-    var parser = item.Parser ?? "sokmil";
-
-    if (parser == "sokmil" && !string.IsNullOrEmpty(item.SokmilUrl))
+    var parser = item.Parser;
+    if (parser is not null)
     {
-        return (ParserFactory.Create(item.SokmilUrl), item.SokmilUrl);
+        if (parser == "sokmil")
+        {
+            if (string.IsNullOrEmpty(item.SokmilUrl))
+            {
+                throw new Exception("parser is set to 'sokmil' but URL is empty");
+            }
+
+            return (ParserFactory.Create(item.SokmilUrl), item.SokmilUrl);
+        }
+
+        if (parser == "fanza")
+        {
+            if (string.IsNullOrEmpty(item.FanzaUrl))
+            {
+                throw new Exception("parser is set to 'fanza' but URL is empty");
+            }
+
+            return (ParserFactory.Create(item.FanzaUrl), item.FanzaUrl);
+        }
+    }
+    else
+    {
+        if (!string.IsNullOrEmpty(item.SokmilUrl))
+        {
+            return (ParserFactory.Create(item.SokmilUrl), item.SokmilUrl);
+        }
+        if (!string.IsNullOrEmpty(item.FanzaUrl))
+        {
+            return (ParserFactory.Create(item.FanzaUrl), item.FanzaUrl);
+        }
     }
 
-    if (parser == "fanza" && !string.IsNullOrEmpty(item.FanzaUrl))
-    {
-        return (ParserFactory.Create(item.FanzaUrl), item.FanzaUrl);
-    }
-
-    throw new Exception($"Please set sokmil or fanza URL(preferred parser={item.Parser})");
+    throw new Exception("Please set sokmil or fanza URL");
 }
 
 Regex? CreatePattern(ReadOnlySpan<string> args)
