@@ -12,6 +12,10 @@ bool hasHeader = false;
 string url;
 if (args[0] == "-h")
 {
+    if (args.Length < 2)
+    {
+        throw new Exception("Usage: Bloggen -h url");
+    }
     url = args[1];
     hasHeader = true;
 }
