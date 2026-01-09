@@ -23,4 +23,17 @@ public struct PageItem
 
     public bool HasSokmilUrl() => !string.IsNullOrEmpty(SokmilUrl);
     public bool HasFanzaUrl() => !string.IsNullOrEmpty(FanzaUrl);
+
+    public void Validate()
+    {
+        if (string.IsNullOrEmpty(Id))
+        {
+            throw new Exception("missing 'ID' parameter");
+        }
+
+        if (string.IsNullOrEmpty(SokmilUrl) && string.IsNullOrEmpty(FanzaUrl))
+        {
+            throw new Exception("Please set at least one product URL");
+        }
+    }
 }

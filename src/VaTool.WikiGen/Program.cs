@@ -18,6 +18,8 @@ var page = await PageLoader.Load(pageFile);
 
 foreach (var item in page.Items)
 {
+    item.Validate();
+
     var (parser, productUrl) = GetParser(item);
     if (pattern is not null && !pattern.IsMatch(item.Id))
     {
@@ -70,7 +72,7 @@ await Clipboard.Copy(output);
         }
     }
 
-    throw new Exception("Please set sokmil or fanza URL");
+    throw new Exception($"Please set sokmil or fanza URL. ID={item.Id}");
 }
 
 Regex? CreatePattern(ReadOnlySpan<string> args)
