@@ -26,7 +26,18 @@ internal class FanzaParser : IParser
         await context.AddCookiesAsync([cookie]);
 
         var page = await context.NewPageAsync();
-        await page.GotoAsync(url);
+
+        // 'load' event never happens with PlayWright, wait for 'DOMContentLoaded' and title being available instead
+        var gotoOptions = new PageGotoOptions
+        {
+            Timeout = 10.0f * 1000.0f,
+            WaitUntil = WaitUntilState.DOMContentLoaded
+        };
+
+        await page.GotoAsync(url, gotoOptions);
+
+        var selector = "meta[property='og:title']";
+        await page.WaitForFunctionAsync("selector => !!document.querySelector(selector)", selector);
 
         var product = new Product();
 
