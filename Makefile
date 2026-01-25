@@ -6,7 +6,6 @@ BUILD_FLAGS=-c Release -r linux-x64 --self-contained true -p:PublishSingleFile=t
 BLOG_GEN=src/VaTool.BlogGen/$(LINUX_BIN_DIR)/VaTool.BlogGen
 WIKI_GEN=src/VaTool.WikiGen/$(LINUX_BIN_DIR)/VaTool.WikiGen
 PLAYWRITE_DIR=src/VaTool.BlogGen/$(LINUX_BIN_DIR)/.playwright
-PLAYWRITE_SCRIPT=src/VaTool.BlogGen/$(LINUX_BIN_DIR)/$(DOTNET_VERSION)/playwright.ps1
 
 all: $(BLOG_GEN) $(WIKI_GEN)
 
@@ -25,7 +24,7 @@ install: $(BLOG_GEN) $(WIKI_GEN)
 
 .PHONY: install-browser
 install-browser:
-	pwsh $(PLAYWRITE_SCRIPT) install chromium
+	cd src/VaTool.BlogGen && pwsh bin/Release/net10.0/linux-x64/playwright.ps1 install chromium
 
 .PHONY: clean
 clean:
