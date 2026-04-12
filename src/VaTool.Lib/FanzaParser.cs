@@ -53,23 +53,41 @@ internal class FanzaParser : IParser
             product.Title = title;
         }
 
-        var links = await page.Locator("img").ElementHandlesAsync();
-        foreach (var link in links)
+        if (url.Contains("/amateur/"))
         {
-            var src = await link.GetAttributeAsync("src");
-            if (string.IsNullOrEmpty(src)) continue;
-
-            if (src.Contains("pl.jpg"))
+            var metaImage = await page.QuerySelectorAsync("meta[property='og:image']");
+            if (metaImage is not null)
             {
-                var pos = src.IndexOf('?');
-                if (pos >= 0)
+                var image = await metaImage.GetAttributeAsync("content");
+                if (string.IsNullOrEmpty(image))
                 {
-                    src = src[..pos];
+                    throw new Exception($"Cannot get title from {url}");
                 }
 
-                product.LargeImage = src;
-                product.SmallImage = product.LargeImage.Replace("pl.jpg", "ps.jpg");
-                break;
+                product.SmallImage = image;
+                product.LargeImage = image;
+            }
+        }
+        else
+        {
+            var links = await page.Locator("img").ElementHandlesAsync();
+            foreach (var link in links)
+            {
+                var src = await link.GetAttributeAsync("src");
+                if (string.IsNullOrEmpty(src)) continue;
+
+                if (src.Contains("pl.jpg"))
+                {
+                    var pos = src.IndexOf('?');
+                    if (pos >= 0)
+                    {
+                        src = src[..pos];
+                    }
+
+                    product.LargeImage = src;
+                    product.SmallImage = product.LargeImage.Replace("pl.jpg", "ps.jpg");
+                    break;
+                }
             }
         }
 
