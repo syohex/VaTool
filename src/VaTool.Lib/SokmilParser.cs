@@ -48,7 +48,7 @@ internal class SokmilParser : IParser
         var thumbnailElement = document.QuerySelector("img.jacket-img");
         if (thumbnailElement is not null)
         {
-            var imageUrl = thumbnailElement.GetAttribute("content");
+            var imageUrl = thumbnailElement.GetAttribute("src");
             if (string.IsNullOrEmpty(imageUrl))
             {
                 throw new Exception($"Cannot get small image from {url}");
