@@ -16,6 +16,8 @@ var pageFile = args[0];
 var entries = new List<TableEntry>();
 var page = await PageLoader.Load(pageFile);
 
+var matches = 0;
+
 foreach (var item in page.Items)
 {
     item.Validate();
@@ -26,8 +28,16 @@ foreach (var item in page.Items)
         continue;
     }
 
+    matches += 1;
+
     var product = await parser.Parse(productUrl, config);
     entries.Add(new TableEntry(item, product));
+}
+
+if (matches == 0)
+{
+    Console.WriteLine("nothing matched");
+    return;
 }
 
 var output = Render(page, entries, config, shouldWriteHeader);
