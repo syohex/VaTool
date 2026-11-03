@@ -1,5 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-using AngleSharp;
+﻿using AngleSharp;
 
 namespace VaTool.Lib;
 
@@ -57,13 +56,21 @@ internal class SokmilParser : IParser
             product.SmallImage = imageUrl;
         }
 
-        var releaseDateElement = document.QuerySelector("span[itemprop=releaseDate]");
-        if (releaseDateElement is not null)
+        var productInfos = document.QuerySelectorAll("dl.product-info");
+        foreach (var productInfo in productInfos)
         {
-            var releaseDate = releaseDateElement.GetAttribute("content");
-            if (!string.IsNullOrEmpty(releaseDate))
+            var infoTitle = productInfo.QuerySelector("dt.info-title");
+            if (infoTitle is not null && infoTitle.TextContent is "発売日" or "配信開始日")
             {
-                product.ReleaseDate = DateUtil.FormatDate(releaseDate);
+                var infoDate = productInfo.QuerySelector("dd.info-value");
+                if (infoDate is not null)
+                {
+                    var dateStr = DateUtil.FormatDate(infoDate.TextContent.Trim());
+                    if (string.IsNullOrEmpty(product.ReleaseDate) || (string.Compare(dateStr, product.ReleaseDate) < 0))
+                    {
+                        product.ReleaseDate = dateStr;
+                    }
+                }
             }
         }
 
