@@ -1,4 +1,4 @@
-DOTNET_VERSION=10.0
+DOTNET_VERSION=11.0
 LINUX_BIN_DIR=bin/Release/net$(DOTNET_VERSION)/linux-x64/publish
 INSTALL_DIR=~/.dotnet/tools
 BUILD_FLAGS=-c Release -r linux-x64 --self-contained true -p:PublishSingleFile=true
