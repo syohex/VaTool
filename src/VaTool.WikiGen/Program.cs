@@ -186,6 +186,12 @@ void RenderTableEntry(TableEntry entry, Config config, StringBuilder sb)
             {
                 actressLinks.Add(actress.TrimEnd('?'));
             }
+            else if (actress.Contains(','))
+            {
+                // co-acting case
+                var names = actress.Split(',').Select(name => $"[[{name.Trim()}]]").ToArray();
+                actressLinks.Add(string.Join('・', names));
+            }
             else
             {
                 actressLinks.Add($"[[{actress}]]");
