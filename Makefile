@@ -24,7 +24,7 @@ install: $(BLOG_GEN) $(WIKI_GEN)
 
 .PHONY: install-browser
 install-browser:
-	cd src/VaTool.BlogGen && pwsh bin/Release/net10.0/linux-x64/playwright.ps1 install chromium
+	cd src/VaTool.BlogGen && pwsh bin/Release/net$(DOTNET_VERSION)/linux-x64/playwright.ps1 install chromium
 
 .PHONY: clean
 clean:
